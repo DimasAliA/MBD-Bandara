@@ -1,6 +1,7 @@
 import pool from '../config/db.js';
 
 class BandaraController {
+  // bandara
   async tambahBandara(req, res) {
     try {
       const { id_bandara,nama, kota, negara, tahun_berdiri } = req.body;
@@ -39,6 +40,42 @@ class BandaraController {
       res.json(rows);
     } catch (err) {
       console.error('Error fetching bandara:', err);
+      res.status(500).send('Server Error');
+    }
+  }
+  // maskapai
+  async tambahMaskapai(req, res) {
+    try {
+      const { nama, negara_asal, tahun_pendirian } = req.body;
+      const [result] = await db.query('CALL tambah_maskapai(?, ?, ?, @id_maskapai, @pesan)', [nama, negara_asal, tahun_pendirian]);
+      const [messageResult] = await db.query('SELECT @id_maskapai AS id_maskapai, @pesan AS pesan');
+      res.json(messageResult[0]);
+    } catch (err) {
+      console.error('Error adding maskapai:', err);
+      res.status(500).send('Server Error');
+    }
+  }
+
+  async perbaruiMaskapai(req, res) {
+    try {
+      const { id_maskapai, nama, negara_asal, tahun_pendirian } = req.body;
+      const [result] = await db.query('CALL perbarui_maskapai(?, ?, ?, ?, @pesan)', [id_maskapai, nama, negara_asal, tahun_pendirian]);
+      const [messageResult] = await db.query('SELECT @pesan AS pesan');
+      res.json(messageResult[0]);
+    } catch (err) {
+      console.error('Error updating maskapai:', err);
+      res.status(500).send('Server Error');
+    }
+  }
+
+  async hapusMaskapai(req, res) {
+    try {
+      const { id_maskapai } = req.params;
+      const [result] = await db.query('CALL hapus_maskapai(?, @pesan)', [id_maskapai]);
+      const [messageResult] = await db.query('SELECT @pesan AS pesan');
+      res.json(messageResult[0]);
+    } catch (err) {
+      console.error('Error deleting maskapai:', err);
       res.status(500).send('Server Error');
     }
   }
