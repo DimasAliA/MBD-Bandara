@@ -83,7 +83,7 @@ class BandaraController {
   // get dari view
   async getBandaratertuadantermuda(req, res) {
     try {
-      const [rows] = await db.query('SELECT * FROM bandara_tertua_dan_termuda');
+      const [rows] = await pool.query('SELECT * FROM bandara_tertua_dan_termuda');
       res.json(rows);
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -91,7 +91,7 @@ class BandaraController {
   }
   async maskapai_info(req, res) {
     try {
-      const [rows] = await db.query('SELECT * FROM maskapai_info');
+      const [rows] = await pool.query('SELECT * FROM maskapai_info');
       res.json(rows);
     } catch (err) {
       res.status(500).json({ error: err.message });
