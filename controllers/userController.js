@@ -4,12 +4,13 @@ class BandaraController {
   // bandara
   async tambahBandara(req, res) {
     try {
-      const { id_bandara,nama, kota, negara, tahun_berdiri } = req.body;
-      const [result] = await pool.query('CALL tambah_bandara(?,?, ?, ?, ?, @p_pesan)', [id_bandara,nama, kota, negara, tahun_berdiri]);
-      const [output] = await pool.query('SELECT @p_pesan AS pesan');
-      res.json(output[0]);
+      const { nama, kota, negara, tahun_berdiri } = req.body;
+      await pool.query('CALL tambah_bandara(?, ?, ?, ?, @pesan)', [nama, kota, negara, tahun_berdiri]);
+      const [messageResult] = await pool.query('SELECT @pesan AS pesan');
+      res.json(messageResult[0]);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      console.error('Error adding bandara:', err);
+      res.status(500).send('Server Error');
     }
   }
 
@@ -47,8 +48,8 @@ class BandaraController {
   async tambahMaskapai(req, res) {
     try {
       const { nama, negara_asal, tahun_pendirian } = req.body;
-      const [result] = await db.query('CALL tambah_maskapai(?, ?, ?, @id_maskapai, @pesan)', [nama, negara_asal, tahun_pendirian]);
-      const [messageResult] = await db.query('SELECT @id_maskapai AS id_maskapai, @pesan AS pesan');
+      const [result] = await pool.query('CALL tambah_maskapai(?, ?, ?, @id_maskapai, @pesan)', [nama, negara_asal, tahun_pendirian]);
+      const [messageResult] = await pool.query('SELECT @id_maskapai AS id_maskapai, @pesan AS pesan');
       res.json(messageResult[0]);
     } catch (err) {
       console.error('Error adding maskapai:', err);
@@ -59,8 +60,8 @@ class BandaraController {
   async perbaruiMaskapai(req, res) {
     try {
       const { id_maskapai, nama, negara_asal, tahun_pendirian } = req.body;
-      const [result] = await db.query('CALL perbarui_maskapai(?, ?, ?, ?, @pesan)', [id_maskapai, nama, negara_asal, tahun_pendirian]);
-      const [messageResult] = await db.query('SELECT @pesan AS pesan');
+      const [result] = await pool.query('CALL perbarui_maskapai(?, ?, ?, ?, @pesan)', [id_maskapai, nama, negara_asal, tahun_pendirian]);
+      const [messageResult] = await pool.query('SELECT @pesan AS pesan');
       res.json(messageResult[0]);
     } catch (err) {
       console.error('Error updating maskapai:', err);
@@ -71,12 +72,29 @@ class BandaraController {
   async hapusMaskapai(req, res) {
     try {
       const { id_maskapai } = req.params;
-      const [result] = await db.query('CALL hapus_maskapai(?, @pesan)', [id_maskapai]);
-      const [messageResult] = await db.query('SELECT @pesan AS pesan');
+      const [result] = await pool.query('CALL hapus_maskapai(?, @pesan)', [id_maskapai]);
+      const [messageResult] = await pool.query('SELECT @pesan AS pesan');
       res.json(messageResult[0]);
     } catch (err) {
       console.error('Error deleting maskapai:', err);
       res.status(500).send('Server Error');
+    }
+  }
+  // get dari view
+  async getBandaratertuadantermuda(req, res) {
+    try {
+      const [rows] = await db.query('SELECT * FROM bandara_tertua_dan_termuda');
+      res.json(rows);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+  async maskapai_info(req, res) {
+    try {
+      const [rows] = await db.query('SELECT * FROM maskapai_info');
+      res.json(rows);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
     }
   }
 }

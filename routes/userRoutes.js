@@ -12,4 +12,8 @@ router.post('/tambahMaskapai', BandaraController.tambahMaskapai);
 router.put('/perbaruiMaskapai', BandaraController.perbaruiMaskapai);
 router.delete('/hapusMaskapai/:id_maskapai', BandaraController.hapusMaskapai);
 
+router.get('/getBandara', BandaraController.getBandaratertuadantermuda);
+router.get('/getMaskapai-info', BandaraController.maskapai_info);
+
+
 export default router;
