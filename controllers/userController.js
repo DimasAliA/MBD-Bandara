@@ -9,7 +9,6 @@ class BandaraController {
       const [messageResult] = await pool.query('SELECT @pesan AS pesan');
       res.json(messageResult[0]);
     } catch (err) {
-      console.error('Error adding bandara:', err);
       res.status(500).send('Server Error');
     }
   }
@@ -42,6 +41,15 @@ class BandaraController {
     } catch (err) {
       console.error('Error fetching bandara:', err);
       res.status(500).send('Server Error');
+    }
+  }
+  async getBandarabyID(req, res) {
+    try {
+      const {id_bandara} = req.params;
+      const [rows] = await pool.query('SELECT * FROM bandara WHERE id_bandara=(?)',[id_bandara]);
+      res.json(rows);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
     }
   }
   // maskapai
@@ -80,6 +88,40 @@ class BandaraController {
       res.status(500).send('Server Error');
     }
   }
+  // penumpang
+  async tambahPenumpang(req, res) {
+    try {
+      const { nama } = req.body;
+      const [result] = await pool.query('CALL tambah_penumpang(?, @pesan)', [nama]);
+      const [messageResult] = await pool.query('SELECT @pesan AS pesan');
+      res.json(messageResult[0]);
+    } catch (err) {
+      console.error('Error adding maskapai:', err);
+      res.status(500).send('Server Error');
+    }
+  }
+  async perbaruiPenumpang(req, res) {
+    try {
+      const { id_penumpang, nama} = req.body;
+      const [result] = await pool.query('CALL perbarui_penumpang(?, ?,@p_pesan)', [id_penumpang, nama]);
+      const [output] = await pool.query('SELECT @p_pesan AS pesan');
+      res.json(output[0]);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+  async hapusPenumpang(req, res) {
+    try {
+      const { id_penumpang } = req.params;
+      const [result] = await pool.query('CALL hapus_penumpang(?, @pesan)', [id_penumpang]);
+      const [messageResult] = await pool.query('SELECT @pesan AS pesan');
+      res.json(messageResult[0]);
+    } catch (err) {
+      console.error('Error deleting penumpang:', err);
+      res.status(500).send('Server Error');
+    }
+  }
+
   // get dari view
   async getBandaratertuadantermuda(req, res) {
     try {
