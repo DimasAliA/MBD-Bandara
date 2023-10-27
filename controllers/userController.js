@@ -9,7 +9,7 @@ class BandaraController {
       const [messageResult] = await pool.query('SELECT @pesan AS pesan');
       res.json(messageResult[0]);
     } catch (err) {
-      res.status(500).send('Server Error');
+      res.status(500).send({error: err.message});
     }
   }
 
