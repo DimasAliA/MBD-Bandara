@@ -36,7 +36,7 @@ class BandaraController {
   }
   async getBandara(req, res) {
     try {
-      const [rows] = await pool.query('SELECT * FROM bandara');
+      const [rows] = await pool.query('SELECT * FROM v_bandara');
       res.json(rows);
     } catch (err) {
       console.error('Error fetching bandara:', err);
@@ -46,7 +46,7 @@ class BandaraController {
   async getBandarabyID(req, res) {
     try {
       const {id_bandara} = req.params;
-      const [rows] = await pool.query('SELECT * FROM bandara WHERE id_bandara=(?)',[id_bandara]);
+      const [rows] = await pool.query('SELECT * FROM v_bandara WHERE id_bandara=(?)',[id_bandara]);
       res.json(rows);
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -88,6 +88,24 @@ class BandaraController {
       res.status(500).send('Server Error');
     }
   }
+  async getMaskapai(req, res) {
+    try {
+      const [rows] = await pool.query('SELECT * FROM v_maskapai');
+      res.json(rows);
+    } catch (err) {
+      console.error('Error fetching bandara:', err);
+      res.status(500).send('Server Error');
+    }
+  }
+  async getMaskapaibyID(req, res) {
+    try {
+      const {id_maskapai} = req.params;
+      const [rows] = await pool.query('SELECT * FROM v_maskapai WHERE id_maskapai=(?)',[id_maskapai]);
+      res.json(rows);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
   // penumpang
   async tambahPenumpang(req, res) {
     try {
@@ -119,6 +137,24 @@ class BandaraController {
     } catch (err) {
       console.error('Error deleting penumpang:', err);
       res.status(500).send('Server Error');
+    }
+  }
+  async getPenumpang(req, res) {
+    try {
+      const [rows] = await pool.query('SELECT * FROM v_penumpang');
+      res.json(rows);
+    } catch (err) {
+      console.error('Error fetching bandara:', err);
+      res.status(500).send('Server Error');
+    }
+  }
+  async getPenumpangbyID(req, res) {
+    try {
+      const {id_penumpang} = req.params;
+      const [rows] = await pool.query('SELECT * FROM v_penumpang WHERE id_penumpang=(?)',[id_penumpang]);
+      res.json(rows);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
     }
   }
   // bookings
@@ -154,6 +190,77 @@ class BandaraController {
       res.status(500).send('Server Error');
     }
   }
+  async getPesanan(req, res) {
+    try {
+      const [rows] = await pool.query('SELECT * FROM v_bookings');
+      res.json(rows);
+    } catch (err) {
+      console.error('Error fetching bandara:', err);
+      res.status(500).send('Server Error');
+    }
+  }
+  async getPesananbyID(req, res) {
+    try {
+      const {booking_id} = req.params;
+      const [rows] = await pool.query('SELECT * FROM v_bookings WHERE id_booking=(?)',[booking_id]);
+      res.json(rows);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+
+  // penerbangan
+  async tambahPenerbangan(req, res) {
+    try {
+      const { id_maskapai,id_bandara,id_bandara_tujuan,waktu_keberangkatan,waktu_kedatangan,durasi,kapasitas_kursi,harga } = req.body;
+      const [result] = await pool.query('CALL tambah_penerbangan(?,?,?,?,?,?,?,?, @pesan)', [id_maskapai,id_bandara,id_bandara_tujuan,waktu_keberangkatan,waktu_kedatangan,durasi,kapasitas_kursi,harga]);
+      const [messageResult] = await pool.query('SELECT @pesan AS pesan');
+      res.json(messageResult[0]);
+    } catch (err) {
+      console.error('Error Menambah Pesanan:', err);
+      res.status(500).send('Server Error');
+    }
+  }
+  async perbaruiPenerbangan(req, res) {
+    try {
+      const { id_penerbangan,id_maskapai,id_bandara,id_bandara_tujuan,waktu_keberangkatan,waktu_kedatangan,durasi,kapasitas_kursi,harga } = req.body;
+      const [result] = await pool.query('CALL perbarui_penerbangan(?,?,?,?,?,?,?,?,?, @pesan)', [id_penerbangan,id_maskapai,id_bandara,id_bandara_tujuan,waktu_keberangkatan,waktu_kedatangan,durasi,kapasitas_kursi,harga]);
+      const [output] = await pool.query('SELECT @p_pesan AS pesan');
+      res.json(output[0]);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+  async hapusPenerbangan(req, res) {
+    try {
+      const {  booking_id } = req.params;
+      const [result] = await pool.query('CALL hapus_penerbangan(?, @pesan)', [booking_id]);
+      const [messageResult] = await pool.query('SELECT @pesan AS pesan');
+      res.json(messageResult[0]);
+    } catch (err) {
+      console.error('Error deleting penumpang:', err);
+      res.status(500).send('Server Error');
+    }
+  }
+  async getPenerbangan(req, res) {
+    try {
+      const [rows] = await pool.query('SELECT * FROM v_penerbangan');
+      res.json(rows);
+    } catch (err) {
+      console.error('Error fetching bandara:', err);
+      res.status(500).send('Server Error');
+    }
+  }
+  async getPenerbanganbyID(req, res) {
+    try {
+      const {id_penerbangan} = req.params;
+      const [rows] = await pool.query('SELECT * FROM v_penerbangan WHERE id_penerbangan=(?)',[id_penerbangan]);
+      res.json(rows);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+
 
   // get dari view
   async getBandaratertuadantermuda(req, res) {
