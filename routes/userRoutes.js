@@ -34,7 +34,7 @@ router.get('/pesanan/:booking_id',BandaraController.getPesananbyID);
 // penerbangan
 router.post('/penerbangan',BandaraController.tambahPenerbangan);
 router.put('/penerbangan',BandaraController.perbaruiPenerbangan);
-router.delete('/penerbangan',BandaraController.hapusPenerbangan);
+router.delete('/penerbangan/:id_penerbangan',BandaraController.hapusPenerbangan);
 router.get('/penerbangan',BandaraController.getPenerbangan);
 router.get('/penerbangan/:id_penerbangan',BandaraController.getPenerbanganbyID);
 

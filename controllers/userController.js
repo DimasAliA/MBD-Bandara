@@ -233,8 +233,8 @@ class BandaraController {
   }
   async hapusPenerbangan(req, res) {
     try {
-      const {  booking_id } = req.params;
-      const [result] = await pool.query('CALL hapus_penerbangan(?, @pesan)', [booking_id]);
+      const {  id_penerbangan } = req.params;
+      const [result] = await pool.query('CALL hapus_penerbangan(?, @pesan)', [id_penerbangan]);
       const [messageResult] = await pool.query('SELECT @pesan AS pesan');
       res.json(messageResult[0]);
     } catch (err) {
