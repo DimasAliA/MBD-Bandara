@@ -161,7 +161,7 @@ class BandaraController {
   async tambahPesanan(req, res) {
     try {
       const { penerbangan_id,penumpang_id,tanggal_pemesanan,tanggal_penerbangan } = req.body;
-      const [result] = await pool.query('CALL tambah_pesanan(?,?,?,? @pesan)', [penerbangan_id,penumpang_id,tanggal_pemesanan,tanggal_penerbangan]);
+      const [result] = await pool.query('CALL tambah_pesanan(?,?,?,?, @pesan)', [penerbangan_id,penumpang_id,tanggal_pemesanan,tanggal_penerbangan]);
       const [messageResult] = await pool.query('SELECT @pesan AS pesan');
       res.json(messageResult[0]);
     } catch (err) {
@@ -179,6 +179,7 @@ class BandaraController {
       res.status(500).json({ error: err.message });
     }
   }
+
   async hapusPesanan(req, res) {
     try {
       const {  booking_id } = req.params;
@@ -190,6 +191,7 @@ class BandaraController {
       res.status(500).send('Server Error');
     }
   }
+
   async getPesanan(req, res) {
     try {
       const [rows] = await pool.query('SELECT * FROM v_bookings');
